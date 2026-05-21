@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disha AI | Masterpiece</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: #030712;
+            overflow: hidden;
+        }
+
+        /* The Liquid Aurora Background */
+        .aurora-bg {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15), transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15), transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15), transparent 50%);
+            animation: flow 20s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes flow {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(5deg) scale(1.1); }
+            100% { transform: rotate(-5deg) scale(1.05); }
+        }
+
+        /* Ultra-Premium Frosted Glass */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+        /* Floating Input Pill - FIXED CONFLICTS */
+        .input-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            /* Only transition colors to prevent breaking the GSAP entry animation */
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-pill:focus-within {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+
+    <div class="aurora-bg"></div>
+
+    <div id="app-container" class="w-full max-w-5xl glass-panel rounded-[2rem] overflow-hidden flex flex-col h-[90vh] relative opacity-0">
+        
+        <header class="px-8 py-5 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/5 z-10">
+            <div class="flex items-center gap-4">
+                <div id="logo-icon" class="bg-gradient-to-br from-emerald-400 to-emerald-600 p-2.5 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <h1 class="text-2xl font-semibold tracking-tight text-white/90">Disha AI</h1>
+            </div>
+            
+            <div class="flex gap-3 w-full sm:w-auto" id="nav-controls">
+                <div class="relative group">
+                    <select id="stu-sub" class="w-full sm:w-36 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
+                        <option value="" disabled selected>Select Subject</option>
+                        <option value="physics" class="bg-gray-900 text-white">Physics</option>
+                        <option value="chemistry" class="bg-gray-900 text-white">Chemistry</option>
+                        <option value="math" class="bg-gray-900 text-white">Mathematics</option>
+                    </select>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 group-hover:text-emerald-400 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <select id="stu-grade" class="w-full sm:w-32 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
+                        <option value="" disabled selected>Select Class</option>
+                        <option value="11" class="bg-gray-900 text-white">Class 11</option>
+                        <option value="12" class="bg-gray-900 text-white">Class 12</option>
+                    </select>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 group-hover:text-emerald-400 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <select id="stu-chap" class="w-full sm:w-40 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
+                        <option value="" disabled selected>Select Chapter</option>
+                        <option value="kinematics" class="bg-gray-900 text-white">Kinematics</option>
+                        <option value="thermodynamics" class="bg-gray-900 text-white">Thermodynamics</option>
+                        <option value="electromagnetism" class="bg-gray-900 text-white">Electromagnetism</option>
+                    </select>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 group-hover:text-emerald-400 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="chat-window" class="flex-1 min-h-0 overflow-y-auto px-8 py-8 space-y-8 z-10 scroll-smooth">
+            
+            <div class="flex justify-center my-16" id="welcome-msg">
+                <div class="text-center space-y-5 max-w-md">
+                    <h2 class="text-4xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">Clarity awaits.</h2>
+                    <p class="text-white/40 text-sm leading-relaxed font-light">Ask any question from the uploaded material. The AI will instantly locate the exact textbook context and synthesize a precise answer.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="p-6 sm:p-8 pt-2 pb-6 shrink-0 z-10 w-full relative">
+            <div class="input-pill relative max-w-4xl mx-auto rounded-3xl flex items-center p-2 pr-2 shadow-2xl backdrop-blur-md">
+                <input type="text" id="stu-question" placeholder="Ask your question here..." 
+                    class="w-full bg-transparent px-6 py-4 text-white/90 placeholder-white/40 outline-none text-lg font-medium" 
+                    onkeypress="if(event.key === 'Enter') askQuestion()">
+                
+                <button id="send-btn" onclick="askQuestion()" class="aspect-square h-14 w-14 shrink-0 bg-white text-black rounded-2xl flex items-center justify-center hover:bg-emerald-400 hover:text-white transition-colors cursor-pointer z-20">
+                    <svg class="w-6 h-6 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        const sendBtn = document.getElementById('send-btn');
+
+        // --- Initial Page Load Animations (GSAP) ---
+        gsap.to("#app-container", { opacity: 1, duration: 1, ease: "power2.out" });
+        gsap.from("#logo-icon", { y: -20, opacity: 0, duration: 1, delay: 0.2, ease: "elastic.out(1, 0.4)" });
+        gsap.from("#nav-controls input", { y: -10, opacity: 0, duration: 0.8, stagger: 0.1, delay: 0.3, ease: "back.out(1.7)" });
+        gsap.from("#welcome-msg", { y: 30, opacity: 0, duration: 1, delay: 0.5, ease: "power3.out" });
+        gsap.from(".input-pill", { y: 30, opacity: 0, duration: 1, delay: 0.6, ease: "elastic.out(1, 0.6)" });
+
+        // Button hover bounce effect
+        sendBtn.addEventListener('mouseenter', () => gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }));
+        sendBtn.addEventListener('mouseleave', () => gsap.to(sendBtn, { scale: 1, duration: 0.3, ease: "power2.out" }));
+        sendBtn.addEventListener('mousedown', () => gsap.to(sendBtn, { scale: 0.9, duration: 0.1 }));
+        sendBtn.addEventListener('mouseup', () => gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }));
+
+        function createBubble(text, isUser) {
+            const msgWrapper = document.createElement('div');
+            msgWrapper.className = isUser ? "flex justify-end" : "flex justify-start";
+            
+            const msgBubble = document.createElement('div');
+            // Premium typography and spacing for bubbles
+            msgBubble.className = isUser 
+                ? "bg-white text-black px-6 py-4 rounded-[2rem] rounded-tr-lg max-w-[80%] shadow-lg font-medium leading-relaxed tracking-tight" 
+                : "bg-white/5 border border-white/10 text-white/90 px-6 py-5 rounded-[2rem] rounded-tl-lg max-w-[85%] shadow-xl font-light whitespace-pre-wrap leading-relaxed tracking-wide";
+            
+            msgBubble.innerHTML = text; 
+            msgWrapper.appendChild(msgBubble);
+            return { msgWrapper, msgBubble };
+        }
+
+        async function askQuestion() {
+            const input = document.getElementById('stu-question');
+            const question = input.value.trim();
+            if (!question) return;
+
+            // Fade out welcome message smoothly
+            if (welcomeMsg && welcomeMsg.style.display !== 'none') {
+                gsap.to(welcomeMsg, { opacity: 0, y: -20, duration: 0.4, onComplete: () => welcomeMsg.style.display = 'none' });
+            }
+
+            const data = {
+                subject: document.getElementById('stu-sub').value,
+                grade: document.getElementById('stu-grade').value,
+                chapter: document.getElementById('stu-chap').value,
+                question: question
+            };
+
+            input.value = '';
+
+            // 1. Append User Message
+            const { msgWrapper: userWrapper, msgBubble: userBubble } = createBubble(question, true);
+            chatWindow.appendChild(userWrapper);
+            
+            // Jumpy, elastic animation for user message
+            gsap.fromTo(userBubble, 
+                { opacity: 0, scale: 0.5, x: 50, transformOrigin: "bottom right" }, 
+                { opacity: 1, scale: 1, x: 0, duration: 0.6, ease: "elastic.out(1, 0.6)" }
+            );
+
+            // Scroll to bottom
+            gsap.to(chatWindow, { scrollTo: "max", duration: 0.5, ease: "power2.out" });
+
+            // 2. Add Flowy Loading State
+            const loadingId = 'loading-' + Date.now();
+            const loadingHtml = `
+                <div id="${loadingId}" class="flex justify-start my-2">
+                    <div class="bg-white/5 border border-white/10 px-5 py-3 rounded-full text-white/50 text-sm flex items-center gap-3">
+                        <div class="flex gap-1.5">
+                            <div class="dot w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
+                            <div class="dot w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
+                            <div class="dot w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
+                        </div>
+                        <span class="tracking-wide">Synthesizing...</span>
+                    </div>
+                </div>`;
+            chatWindow.insertAdjacentHTML('beforeend', loadingHtml);
+            
+            // Animate the loading dots in a wave
+            gsap.to(`#${loadingId} .dot`, { y: -4, duration: 0.4, stagger: 0.15, repeat: -1, yoyo: true, ease: "power1.inOut" });
+            gsap.from(`#${loadingId}`, { opacity: 0, y: 10, duration: 0.4 });
+            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+
+            try {
+                // FIXED: Directing to 127.0.0.1 for stability
+                const response = await fetch('http://127.0.0.1:3000/api/ask-ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                // Remove loader smoothly
+                const loader = document.getElementById(loadingId);
+                gsap.to(loader, { opacity: 0, scale: 0.8, duration: 0.3, onComplete: () => {
+                    loader.remove();
+                    
+                    // 3. Append AI Response
+                    const responseText = (response.ok && result.success) ? result.answer : `❌ Error: ${result.error}`;
+                    const { msgWrapper: aiWrapper, msgBubble: aiBubble } = createBubble(responseText, false);
+                    chatWindow.appendChild(aiWrapper);
+
+                    // Fluid, smooth slide-up for AI response
+                    gsap.fromTo(aiBubble, 
+                        { opacity: 0, y: 30, scale: 0.95, transformOrigin: "bottom left" }, 
+                        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }
+                    );
+                    
+                    gsap.to(chatWindow, { scrollTo: "max", duration: 0.6, ease: "power2.out", delay: 0.1 });
+
+                    if (window.MathJax) {
+                        MathJax.typesetPromise([aiBubble]).catch(console.error);
+                    }
+                }});
+
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                const { msgWrapper, msgBubble } = createBubble("❌ Connection failed.", false);
+                chatWindow.appendChild(msgWrapper);
+                gsap.from(msgBubble, { opacity: 0, y: 20, duration: 0.5 });
+            }
+        }
+    </script>
+</body>
+</html>

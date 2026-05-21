@@ -1,0 +1,33 @@
+# =========================
+# Node.js & Frontend
+# =========================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# =========================
+# Python & Backend
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+env/
+.venv/
+pip-log.txt
+
+# =========================
+# Secrets & Environment Variables (CRITICAL)
+# =========================
+.env
+.env.local
+*.pem
+
+# =========================
+# OS & Editor Files
+# =========================
+.DS_Store
+.vscode/
+.idea/
+*.swp
