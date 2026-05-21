@@ -233,7 +233,7 @@
 
             try {
                 // FIXED: Directing to 127.0.0.1 for stability
-                const response = await fetch('https://disha-ai-node.onrender.com', {
+                const response = await fetch('https://disha-ai-node.onrender.com/api/ask-ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
