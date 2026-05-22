@@ -56,17 +56,22 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
 
-        /* Floating Input Pill - FIXED CONFLICTS */
+        /* Floating Input Pill */
         .input-pill {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            /* Only transition colors to prevent breaking the GSAP entry animation */
             transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
         }
         .input-pill:focus-within {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(16, 185, 129, 0.5);
             box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.2);
+        }
+        
+        /* Disabled state styling */
+        input:disabled, button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -136,7 +141,7 @@
         <div class="p-6 sm:p-8 pt-2 pb-6 shrink-0 z-10 w-full relative">
             <div class="input-pill relative max-w-4xl mx-auto rounded-3xl flex items-center p-2 pr-2 shadow-2xl backdrop-blur-md">
                 <input type="text" id="stu-question" placeholder="Ask your question here..." 
-                    class="w-full bg-transparent px-6 py-4 text-white/90 placeholder-white/40 outline-none text-lg font-medium" 
+                    class="w-full bg-transparent px-6 py-4 text-white/90 placeholder-white/40 outline-none text-lg font-medium disabled:bg-transparent" 
                     onkeypress="if(event.key === 'Enter') askQuestion()">
                 
                 <button id="send-btn" onclick="askQuestion()" class="aspect-square h-14 w-14 shrink-0 bg-white text-black rounded-2xl flex items-center justify-center hover:bg-emerald-400 hover:text-white transition-colors cursor-pointer z-20">
@@ -150,6 +155,7 @@
         const chatWindow = document.getElementById('chat-window');
         const welcomeMsg = document.getElementById('welcome-msg');
         const sendBtn = document.getElementById('send-btn');
+        const inputField = document.getElementById('stu-question');
 
         // --- Initial Page Load Animations (GSAP) ---
         gsap.to("#app-container", { opacity: 1, duration: 1, ease: "power2.out" });
@@ -159,17 +165,23 @@
         gsap.from(".input-pill", { y: 30, opacity: 0, duration: 1, delay: 0.6, ease: "elastic.out(1, 0.6)" });
 
         // Button hover bounce effect
-        sendBtn.addEventListener('mouseenter', () => gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }));
-        sendBtn.addEventListener('mouseleave', () => gsap.to(sendBtn, { scale: 1, duration: 0.3, ease: "power2.out" }));
-        sendBtn.addEventListener('mousedown', () => gsap.to(sendBtn, { scale: 0.9, duration: 0.1 }));
-        sendBtn.addEventListener('mouseup', () => gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }));
+        sendBtn.addEventListener('mouseenter', () => { if(!sendBtn.disabled) gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }) });
+        sendBtn.addEventListener('mouseleave', () => { if(!sendBtn.disabled) gsap.to(sendBtn, { scale: 1, duration: 0.3, ease: "power2.out" }) });
+        sendBtn.addEventListener('mousedown', () => { if(!sendBtn.disabled) gsap.to(sendBtn, { scale: 0.9, duration: 0.1 }) });
+        sendBtn.addEventListener('mouseup', () => { if(!sendBtn.disabled) gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }) });
+
+        // Safe Native Scrolling Function
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+            }, 50);
+        }
 
         function createBubble(text, isUser) {
             const msgWrapper = document.createElement('div');
             msgWrapper.className = isUser ? "flex justify-end" : "flex justify-start";
             
             const msgBubble = document.createElement('div');
-            // Premium typography and spacing for bubbles
             msgBubble.className = isUser 
                 ? "bg-white text-black px-6 py-4 rounded-[2rem] rounded-tr-lg max-w-[80%] shadow-lg font-medium leading-relaxed tracking-tight" 
                 : "bg-white/5 border border-white/10 text-white/90 px-6 py-5 rounded-[2rem] rounded-tl-lg max-w-[85%] shadow-xl font-light whitespace-pre-wrap leading-relaxed tracking-wide";
@@ -180,9 +192,13 @@
         }
 
         async function askQuestion() {
-            const input = document.getElementById('stu-question');
-            const question = input.value.trim();
+            const question = inputField.value.trim();
             if (!question) return;
+
+            // --- BUG FIX 1: THE SPAM LOCK ---
+            // Disable the input and button to prevent rapid double-clicking
+            inputField.disabled = true;
+            sendBtn.disabled = true;
 
             // Fade out welcome message smoothly
             if (welcomeMsg && welcomeMsg.style.display !== 'none') {
@@ -196,20 +212,19 @@
                 question: question
             };
 
-            input.value = '';
+            inputField.value = '';
 
             // 1. Append User Message
             const { msgWrapper: userWrapper, msgBubble: userBubble } = createBubble(question, true);
             chatWindow.appendChild(userWrapper);
             
-            // Jumpy, elastic animation for user message
             gsap.fromTo(userBubble, 
                 { opacity: 0, scale: 0.5, x: 50, transformOrigin: "bottom right" }, 
                 { opacity: 1, scale: 1, x: 0, duration: 0.6, ease: "elastic.out(1, 0.6)" }
             );
 
-            // Scroll to bottom
-            gsap.to(chatWindow, { scrollTo: "max", duration: 0.5, ease: "power2.out" });
+            // --- BUG FIX 2: SAFE NATIVE SCROLL ---
+            scrollToBottom();
 
             // 2. Add Flowy Loading State
             const loadingId = 'loading-' + Date.now();
@@ -226,13 +241,11 @@
                 </div>`;
             chatWindow.insertAdjacentHTML('beforeend', loadingHtml);
             
-            // Animate the loading dots in a wave
             gsap.to(`#${loadingId} .dot`, { y: -4, duration: 0.4, stagger: 0.15, repeat: -1, yoyo: true, ease: "power1.inOut" });
             gsap.from(`#${loadingId}`, { opacity: 0, y: 10, duration: 0.4 });
-            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+            scrollToBottom();
 
             try {
-                // FIXED: Directing to 127.0.0.1 for stability
                 const response = await fetch('https://disha-ai-node.onrender.com/api/ask-ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -240,23 +253,21 @@
                 });
                 const result = await response.json();
                 
-                // Remove loader smoothly
                 const loader = document.getElementById(loadingId);
                 gsap.to(loader, { opacity: 0, scale: 0.8, duration: 0.3, onComplete: () => {
                     loader.remove();
                     
                     // 3. Append AI Response
-                    const responseText = (response.ok && result.success) ? result.answer : `❌ Error: ${result.error}`;
+                    const responseText = (response.ok && result.success) ? result.answer : `❌ Error: ${result.error || "Unknown server error."}`;
                     const { msgWrapper: aiWrapper, msgBubble: aiBubble } = createBubble(responseText, false);
                     chatWindow.appendChild(aiWrapper);
 
-                    // Fluid, smooth slide-up for AI response
                     gsap.fromTo(aiBubble, 
                         { opacity: 0, y: 30, scale: 0.95, transformOrigin: "bottom left" }, 
                         { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }
                     );
                     
-                    gsap.to(chatWindow, { scrollTo: "max", duration: 0.6, ease: "power2.out", delay: 0.1 });
+                    scrollToBottom();
 
                     if (window.MathJax) {
                         MathJax.typesetPromise([aiBubble]).catch(console.error);
@@ -268,6 +279,13 @@
                 const { msgWrapper, msgBubble } = createBubble("❌ Connection failed.", false);
                 chatWindow.appendChild(msgWrapper);
                 gsap.from(msgBubble, { opacity: 0, y: 20, duration: 0.5 });
+                scrollToBottom();
+            } finally {
+                // --- UNLOCK EVERYTHING ---
+                // No matter if it succeeds or fails, unlock the inputs so the user can try again
+                inputField.disabled = false;
+                sendBtn.disabled = false;
+                inputField.focus(); // Snap the cursor back into the input box
             }
         }
     </script>
