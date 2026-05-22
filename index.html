@@ -101,7 +101,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                 </div>
-
+                
                 <div class="relative group">
                     <select id="stu-grade" class="w-full sm:w-32 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
                         <option value="" disabled selected>Select Class</option>
@@ -116,10 +116,7 @@
                 <div class="relative group">
                     <select id="stu-chap" class="w-full sm:w-40 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
                         <option value="" disabled selected>Select Chapter</option>
-                        <option value="kinematics" class="bg-gray-900 text-white">Kinematics</option>
-                        <option value="thermodynamics" class="bg-gray-900 text-white">Thermodynamics</option>
-                        <option value="electromagnetism" class="bg-gray-900 text-white">Electromagnetism</option>
-                    </select>
+                        </select>
                     <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 group-hover:text-emerald-400 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
@@ -156,6 +153,45 @@
         const welcomeMsg = document.getElementById('welcome-msg');
         const sendBtn = document.getElementById('send-btn');
         const inputField = document.getElementById('stu-question');
+
+        // --- DYNAMIC SYLLABUS MENU ---
+        const syllabus = {
+            physics: [
+                { value: "kinematics", text: "Kinematics" },
+                { value: "thermodynamics", text: "Thermodynamics" },
+                { value: "electromagnetism", text: "Electromagnetism" }
+            ],
+            chemistry: [
+                { value: "atomic_structure", text: "Atomic Structure" },
+                { value: "thermodynamics_chem", text: "Chemical Thermodynamics" },
+                { value: "equilibrium", text: "Equilibrium" }
+            ],
+            math: [
+                { value: "calculus", text: "Calculus" },
+                { value: "algebra", text: "Algebra" },
+                { value: "coordinate_geo", text: "Coordinate Geometry" }
+            ]
+        };
+
+        document.getElementById('stu-sub').addEventListener('change', function() {
+            const chapterSelect = document.getElementById('stu-chap');
+            const chapters = syllabus[this.value];
+            
+            // Wipe the old list
+            chapterSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+            
+            // Build the new list
+            if (chapters) {
+                chapters.forEach(chap => {
+                    const option = document.createElement('option');
+                    option.value = chap.value;
+                    option.textContent = chap.text;
+                    option.className = "bg-gray-900 text-white";
+                    chapterSelect.appendChild(option);
+                });
+            }
+        });
+        // -----------------------------
 
         // --- Initial Page Load Animations (GSAP) ---
         gsap.to("#app-container", { opacity: 1, duration: 1, ease: "power2.out" });
