@@ -22,7 +22,6 @@
             overflow: hidden;
         }
 
-        /* The Liquid Aurora Background */
         .aurora-bg {
             position: fixed;
             top: -50%;
@@ -42,7 +41,6 @@
             100% { transform: rotate(-5deg) scale(1.05); }
         }
 
-        /* Ultra-Premium Frosted Glass */
         .glass-panel {
             background: rgba(17, 24, 39, 0.4);
             backdrop-filter: blur(24px);
@@ -51,12 +49,10 @@
             box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
 
-        /* Floating Input Pill */
         .input-pill {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -67,11 +63,12 @@
             border-color: rgba(16, 185, 129, 0.5);
             box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.2);
         }
-        
-        /* Disabled state styling */
-        input:disabled, button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+
+        select option { background: #111827; color: white; }
+
+        .chapter-select-disabled {
+            opacity: 0.4;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -90,33 +87,37 @@
             </div>
             
             <div class="flex gap-3 w-full sm:w-auto" id="nav-controls">
+
+                <!-- Subject Dropdown -->
                 <div class="relative group">
-                    <select id="stu-sub" class="w-full sm:w-36 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
-                        <option value="" disabled selected>Select Subject</option>
-                        <option value="physics" class="bg-gray-900 text-white">Physics</option>
-                        <option value="chemistry" class="bg-gray-900 text-white">Chemistry</option>
-                        <option value="math" class="bg-gray-900 text-white">Mathematics</option>
-                    </select>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 group-hover:text-emerald-400 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                </div>
-                
-                <div class="relative group">
-                    <select id="stu-grade" class="w-full sm:w-32 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
-                        <option value="" disabled selected>Select Class</option>
-                        <option value="11" class="bg-gray-900 text-white">Class 11</option>
-                        <option value="12" class="bg-gray-900 text-white">Class 12</option>
+                    <select id="stu-sub" onchange="onSubjectChange()" class="w-full sm:w-36 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
+                        <option value="" disabled selected>Subject</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="maths">Mathematics</option>
                     </select>
                     <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 group-hover:text-emerald-400 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                 </div>
 
+                <!-- Grade Dropdown -->
                 <div class="relative group">
-                    <select id="stu-chap" class="w-full sm:w-40 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
+                    <select id="stu-grade" onchange="onGradeChange()" class="w-full sm:w-32 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md">
+                        <option value="" disabled selected>Class</option>
+                        <option value="11">Class 11</option>
+                        <option value="12">Class 12</option>
+                    </select>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 group-hover:text-emerald-400 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+
+                <!-- Chapter Dropdown (dynamically populated) -->
+                <div class="relative group">
+                    <select id="stu-chap" class="w-full sm:w-52 bg-white/5 text-sm px-4 py-2.5 rounded-xl border border-white/10 text-white/90 outline-none focus:border-emerald-500/50 appearance-none cursor-pointer transition-colors backdrop-blur-md chapter-select-disabled">
                         <option value="" disabled selected>Select Chapter</option>
-                        </select>
+                    </select>
                     <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 group-hover:text-emerald-400 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
@@ -129,7 +130,7 @@
             <div class="flex justify-center my-16" id="welcome-msg">
                 <div class="text-center space-y-5 max-w-md">
                     <h2 class="text-4xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">Clarity awaits.</h2>
-                    <p class="text-white/40 text-sm leading-relaxed font-light">Ask any question from the uploaded material. The AI will instantly locate the exact textbook context and synthesize a precise answer.</p>
+                    <p class="text-white/40 text-sm leading-relaxed font-light">Select your subject, class, and chapter above — then ask any JEE question from the Disha textbook. The AI will locate the exact context and synthesize a precise answer.</p>
                 </div>
             </div>
 
@@ -138,7 +139,7 @@
         <div class="p-6 sm:p-8 pt-2 pb-6 shrink-0 z-10 w-full relative">
             <div class="input-pill relative max-w-4xl mx-auto rounded-3xl flex items-center p-2 pr-2 shadow-2xl backdrop-blur-md">
                 <input type="text" id="stu-question" placeholder="Ask your question here..." 
-                    class="w-full bg-transparent px-6 py-4 text-white/90 placeholder-white/40 outline-none text-lg font-medium disabled:bg-transparent" 
+                    class="w-full bg-transparent px-6 py-4 text-white/90 placeholder-white/40 outline-none text-lg font-medium" 
                     onkeypress="if(event.key === 'Enter') askQuestion()">
                 
                 <button id="send-btn" onclick="askQuestion()" class="aspect-square h-14 w-14 shrink-0 bg-white text-black rounded-2xl flex items-center justify-center hover:bg-emerald-400 hover:text-white transition-colors cursor-pointer z-20">
@@ -149,70 +150,179 @@
     </div>
 
     <script>
-        const chatWindow = document.getElementById('chat-window');
-        const welcomeMsg = document.getElementById('welcome-msg');
-        const sendBtn = document.getElementById('send-btn');
-        const inputField = document.getElementById('stu-question');
-
-        // --- DYNAMIC SYLLABUS MENU ---
-        const syllabus = {
-            physics: [
-                { value: "kinematics", text: "Kinematics" },
-                { value: "thermodynamics", text: "Thermodynamics" },
-                { value: "electromagnetism", text: "Electromagnetism" }
-            ],
-            chemistry: [
-                { value: "atomic_structure", text: "Atomic Structure" },
-                { value: "thermodynamics_chem", text: "Chemical Thermodynamics" },
-                { value: "equilibrium", text: "Equilibrium" }
-            ],
-            math: [
-                { value: "calculus", text: "Calculus" },
-                { value: "algebra", text: "Algebra" },
-                { value: "coordinate_geo", text: "Coordinate Geometry" }
-            ]
+        // ============================================================
+        //  CHAPTER DATA — sourced from actual Disha JEE book indices
+        // ============================================================
+        const CHAPTER_DATA = {
+            physics: {
+                "11": [
+                    { label: "Ch 1 — Physical World, Units & Measurements", value: "physical_world_units_measurements" },
+                    { label: "Ch 2 — Motion in a Straight Line",             value: "motion_in_a_straight_line" },
+                    { label: "Ch 3 — Motion in a Plane",                     value: "motion_in_a_plane" },
+                    { label: "Ch 4 — Laws of Motion",                        value: "laws_of_motion" },
+                    { label: "Ch 5 — Work, Energy and Power",                value: "work_energy_and_power" },
+                    { label: "Ch 6 — System of Particles & Rotational Motion", value: "system_of_particles_and_rotational_motion" },
+                    { label: "Ch 7 — Gravitation",                           value: "gravitation" },
+                    { label: "Ch 8 — Mechanical Properties of Solids",       value: "mechanical_properties_of_solids" },
+                    { label: "Ch 9 — Mechanical Properties of Fluids",       value: "mechanical_properties_of_fluids" },
+                    { label: "Ch 10 — Thermal Properties of Matter",         value: "thermal_properties_of_matter" },
+                    { label: "Ch 11 — Thermodynamics",                       value: "thermodynamics" },
+                    { label: "Ch 12 — Kinetic Theory",                       value: "kinetic_theory" },
+                    { label: "Ch 13 — Oscillations",                         value: "oscillations" },
+                    { label: "Ch 14 — Waves",                                value: "waves" }
+                ],
+                "12": [
+                    { label: "Ch 15 — Electric Charges and Fields",          value: "electric_charges_and_fields" },
+                    { label: "Ch 16 — Electrostatic Potential & Capacitance", value: "electrostatic_potential_and_capacitance" },
+                    { label: "Ch 17 — Current Electricity",                  value: "current_electricity" },
+                    { label: "Ch 18 — Moving Charges and Magnetism",         value: "moving_charges_and_magnetism" },
+                    { label: "Ch 19 — Magnetism and Matter",                 value: "magnetism_and_matter" },
+                    { label: "Ch 20 — Electromagnetic Induction",            value: "electromagnetic_induction" },
+                    { label: "Ch 21 — Alternating Current",                  value: "alternating_current" },
+                    { label: "Ch 22 — Electromagnetic Waves",                value: "electromagnetic_waves" },
+                    { label: "Ch 23 — Ray Optics & Optical Instruments",     value: "ray_optics_and_optical_instruments" },
+                    { label: "Ch 24 — Wave Optics",                          value: "wave_optics" },
+                    { label: "Ch 25 — Dual Nature of Radiation & Matter",    value: "dual_nature_of_radiation_and_matter" },
+                    { label: "Ch 26 — Atoms",                                value: "atoms" },
+                    { label: "Ch 27 — Nuclei",                               value: "nuclei" },
+                    { label: "Ch 28 — Semiconductor Electronics",            value: "semiconductor_electronics" },
+                    { label: "Ch 29 — Communication Systems",                value: "communication_systems" }
+                ]
+            },
+            chemistry: {
+                "11": [
+                    { label: "Ch 1 — Some Basic Concepts of Chemistry",      value: "some_basic_concepts_of_chemistry" },
+                    { label: "Ch 2 — Structure of Atom",                     value: "structure_of_atom" },
+                    { label: "Ch 3 — Classification of Elements & Periodicity", value: "classification_of_elements_and_periodicity" },
+                    { label: "Ch 4 — Chemical Bonding & Molecular Structure", value: "chemical_bonding_and_molecular_structure" },
+                    { label: "Ch 5 — States of Matter",                      value: "states_of_matter" },
+                    { label: "Ch 6 — Thermodynamics",                        value: "thermodynamics" },
+                    { label: "Ch 7 — Equilibrium",                           value: "equilibrium" },
+                    { label: "Ch 8 — Redox Reactions",                       value: "redox_reactions" },
+                    { label: "Ch 9 — Hydrogen",                              value: "hydrogen" },
+                    { label: "Ch 10 — The s-Block Elements",                 value: "s_block_elements" },
+                    { label: "Ch 11 — The p-Block Elements (Group 13 & 14)", value: "p_block_elements_group_13_14" },
+                    { label: "Ch 12 — Organic Chemistry — Basic Principles", value: "organic_chemistry_basic_principles" },
+                    { label: "Ch 13 — Hydrocarbons",                         value: "hydrocarbons" },
+                    { label: "Ch 14 — Environmental Chemistry",              value: "environmental_chemistry" }
+                ],
+                "12": [
+                    { label: "Ch 15 — The Solid State",                      value: "solid_state" },
+                    { label: "Ch 16 — Solutions",                            value: "solutions" },
+                    { label: "Ch 17 — Electrochemistry",                     value: "electrochemistry" },
+                    { label: "Ch 18 — Chemical Kinetics",                    value: "chemical_kinetics" },
+                    { label: "Ch 19 — Surface Chemistry",                    value: "surface_chemistry" },
+                    { label: "Ch 20 — General Principles & Processes of Isolation of Elements", value: "general_principles_and_processes" },
+                    { label: "Ch 21 — The p-Block Elements (Group 15–18)",   value: "p_block_elements_group_15_to_18" },
+                    { label: "Ch 22 — The d- and f-Block Elements",          value: "d_and_f_block_elements" },
+                    { label: "Ch 23 — Coordination Compounds",               value: "coordination_compounds" },
+                    { label: "Ch 24 — Haloalkanes and Haloarenes",           value: "haloalkanes_and_haloarenes" },
+                    { label: "Ch 25 — Alcohols, Phenols and Ethers",         value: "alcohols_phenols_and_ethers" },
+                    { label: "Ch 26 — Aldehydes, Ketones & Carboxylic Acids", value: "aldehydes_ketones_and_carboxylic_acids" },
+                    { label: "Ch 27 — Amines",                               value: "amines" },
+                    { label: "Ch 28 — Biomolecules",                         value: "biomolecules" },
+                    { label: "Ch 29 — Polymers",                             value: "polymers" },
+                    { label: "Ch 30 — Chemistry in Everyday Life",           value: "chemistry_in_everyday_life" },
+                    { label: "Ch 31 — Analytical Chemistry",                 value: "analytical_chemistry" }
+                ]
+            },
+            maths: {
+                "11": [
+                    { label: "Ch 1 — Sets",                                  value: "sets" },
+                    { label: "Ch 2 — Relations and Functions",               value: "relations_and_functions" },
+                    { label: "Ch 3 — Trigonometric Functions",               value: "trigonometric_functions" },
+                    { label: "Ch 4 — Principle of Mathematical Induction",   value: "principle_of_mathematical_induction" },
+                    { label: "Ch 5 — Complex Numbers & Quadratic Equations", value: "complex_numbers_and_quadratic_equations" },
+                    { label: "Ch 6 — Linear Inequalities",                   value: "linear_inequalities" },
+                    { label: "Ch 7 — Permutations and Combinations",         value: "permutations_and_combinations" },
+                    { label: "Ch 8 — Binomial Theorem",                      value: "binomial_theorem" },
+                    { label: "Ch 9 — Sequences and Series",                  value: "sequences_and_series" },
+                    { label: "Ch 10 — Straight Lines",                       value: "straight_lines" },
+                    { label: "Ch 11 — Conic Sections",                       value: "conic_sections" },
+                    { label: "Ch 12 — Limits and Derivatives",               value: "limits_and_derivatives" },
+                    { label: "Ch 13 — Mathematical Reasoning",               value: "mathematical_reasoning" },
+                    { label: "Ch 14 — Statistics",                           value: "statistics" },
+                    { label: "Ch 15 — Probability",                          value: "probability" }
+                ],
+                "12": [
+                    { label: "Ch 16 — Relations and Functions",              value: "relations_and_functions" },
+                    { label: "Ch 17 — Inverse Trigonometric Functions",      value: "inverse_trigonometric_functions" },
+                    { label: "Ch 18 — Matrices",                             value: "matrices" },
+                    { label: "Ch 19 — Determinants",                         value: "determinants" },
+                    { label: "Ch 20 — Continuity and Differentiability",     value: "continuity_and_differentiability" },
+                    { label: "Ch 21 — Applications of Derivatives",         value: "applications_of_derivatives" },
+                    { label: "Ch 22 — Integrals",                            value: "integrals" },
+                    { label: "Ch 23 — Applications of Integrals",           value: "applications_of_integrals" },
+                    { label: "Ch 24 — Differential Equations",               value: "differential_equations" },
+                    { label: "Ch 25 — Vector Algebra",                       value: "vector_algebra" },
+                    { label: "Ch 26 — Three Dimensional Geometry",           value: "three_dimensional_geometry" },
+                    { label: "Ch 27 — Probability",                          value: "probability" },
+                    { label: "Ch 28 — Properties of Triangles",              value: "properties_of_triangles" }
+                ]
+            }
         };
 
-        document.getElementById('stu-sub').addEventListener('change', function() {
-            const chapterSelect = document.getElementById('stu-chap');
-            const chapters = syllabus[this.value];
-            
-            // Wipe the old list
-            chapterSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
-            
-            // Build the new list
-            if (chapters) {
-                chapters.forEach(chap => {
-                    const option = document.createElement('option');
-                    option.value = chap.value;
-                    option.textContent = chap.text;
-                    option.className = "bg-gray-900 text-white";
-                    chapterSelect.appendChild(option);
-                });
-            }
-        });
-        // -----------------------------
+        // ============================================================
+        //  DROPDOWN LOGIC
+        // ============================================================
+        function onSubjectChange() {
+            // Reset grade and chapter when subject changes
+            document.getElementById('stu-grade').value = '';
+            resetChapterDropdown();
+        }
 
-        // --- Initial Page Load Animations (GSAP) ---
+        function onGradeChange() {
+            const subject = document.getElementById('stu-sub').value;
+            const grade   = document.getElementById('stu-grade').value;
+            const chapSel = document.getElementById('stu-chap');
+
+            if (!subject || !grade) {
+                resetChapterDropdown();
+                return;
+            }
+
+            const chapters = (CHAPTER_DATA[subject] || {})[grade] || [];
+            chapSel.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+            chapters.forEach(ch => {
+                const opt = document.createElement('option');
+                opt.value = ch.value;
+                opt.textContent = ch.label;
+                chapSel.appendChild(opt);
+            });
+
+            chapSel.classList.remove('chapter-select-disabled');
+
+            // Animate the chapter dropdown appearing
+            gsap.fromTo(chapSel, { opacity: 0, y: -6 }, { opacity: 1, y: 0, duration: 0.35, ease: "back.out(1.7)" });
+        }
+
+        function resetChapterDropdown() {
+            const chapSel = document.getElementById('stu-chap');
+            chapSel.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+            chapSel.classList.add('chapter-select-disabled');
+        }
+
+        // ============================================================
+        //  GSAP ANIMATIONS
+        // ============================================================
+        const chatWindow = document.getElementById('chat-window');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        const sendBtn    = document.getElementById('send-btn');
+
         gsap.to("#app-container", { opacity: 1, duration: 1, ease: "power2.out" });
         gsap.from("#logo-icon", { y: -20, opacity: 0, duration: 1, delay: 0.2, ease: "elastic.out(1, 0.4)" });
-        gsap.from("#nav-controls input", { y: -10, opacity: 0, duration: 0.8, stagger: 0.1, delay: 0.3, ease: "back.out(1.7)" });
+        gsap.from("#nav-controls select", { y: -10, opacity: 0, duration: 0.8, stagger: 0.1, delay: 0.3, ease: "back.out(1.7)" });
         gsap.from("#welcome-msg", { y: 30, opacity: 0, duration: 1, delay: 0.5, ease: "power3.out" });
         gsap.from(".input-pill", { y: 30, opacity: 0, duration: 1, delay: 0.6, ease: "elastic.out(1, 0.6)" });
 
-        // Button hover bounce effect
-        sendBtn.addEventListener('mouseenter', () => { if(!sendBtn.disabled) gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }) });
-        sendBtn.addEventListener('mouseleave', () => { if(!sendBtn.disabled) gsap.to(sendBtn, { scale: 1, duration: 0.3, ease: "power2.out" }) });
-        sendBtn.addEventListener('mousedown', () => { if(!sendBtn.disabled) gsap.to(sendBtn, { scale: 0.9, duration: 0.1 }) });
-        sendBtn.addEventListener('mouseup', () => { if(!sendBtn.disabled) gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }) });
+        sendBtn.addEventListener('mouseenter', () => gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }));
+        sendBtn.addEventListener('mouseleave', () => gsap.to(sendBtn, { scale: 1,    duration: 0.3, ease: "power2.out" }));
+        sendBtn.addEventListener('mousedown',  () => gsap.to(sendBtn, { scale: 0.9,  duration: 0.1 }));
+        sendBtn.addEventListener('mouseup',    () => gsap.to(sendBtn, { scale: 1.08, duration: 0.3, ease: "back.out(2)" }));
 
-        // Safe Native Scrolling Function
-        function scrollToBottom() {
-            setTimeout(() => {
-                chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
-            }, 50);
-        }
-
+        // ============================================================
+        //  CHAT LOGIC
+        // ============================================================
         function createBubble(text, isUser) {
             const msgWrapper = document.createElement('div');
             msgWrapper.className = isUser ? "flex justify-end" : "flex justify-start";
@@ -228,29 +338,23 @@
         }
 
         async function askQuestion() {
-            const question = inputField.value.trim();
+            const input    = document.getElementById('stu-question');
+            const question = input.value.trim();
             if (!question) return;
 
-            // --- BUG FIX 1: THE SPAM LOCK ---
-            // Disable the input and button to prevent rapid double-clicking
-            inputField.disabled = true;
-            sendBtn.disabled = true;
-
-            // Fade out welcome message smoothly
             if (welcomeMsg && welcomeMsg.style.display !== 'none') {
                 gsap.to(welcomeMsg, { opacity: 0, y: -20, duration: 0.4, onComplete: () => welcomeMsg.style.display = 'none' });
             }
 
             const data = {
-                subject: document.getElementById('stu-sub').value,
-                grade: document.getElementById('stu-grade').value,
-                chapter: document.getElementById('stu-chap').value,
+                subject:  document.getElementById('stu-sub').value,
+                grade:    document.getElementById('stu-grade').value,
+                chapter:  document.getElementById('stu-chap').value,
                 question: question
             };
 
-            inputField.value = '';
+            input.value = '';
 
-            // 1. Append User Message
             const { msgWrapper: userWrapper, msgBubble: userBubble } = createBubble(question, true);
             chatWindow.appendChild(userWrapper);
             
@@ -259,10 +363,8 @@
                 { opacity: 1, scale: 1, x: 0, duration: 0.6, ease: "elastic.out(1, 0.6)" }
             );
 
-            // --- BUG FIX 2: SAFE NATIVE SCROLL ---
-            scrollToBottom();
+            gsap.to(chatWindow, { scrollTo: "max", duration: 0.5, ease: "power2.out" });
 
-            // 2. Add Flowy Loading State
             const loadingId = 'loading-' + Date.now();
             const loadingHtml = `
                 <div id="${loadingId}" class="flex justify-start my-2">
@@ -279,10 +381,10 @@
             
             gsap.to(`#${loadingId} .dot`, { y: -4, duration: 0.4, stagger: 0.15, repeat: -1, yoyo: true, ease: "power1.inOut" });
             gsap.from(`#${loadingId}`, { opacity: 0, y: 10, duration: 0.4 });
-            scrollToBottom();
+            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
 
             try {
-                const response = await fetch('https://disha-ai-node.onrender.com/api/ask-ai', {
+                const response = await fetch('http://127.0.0.1:3000/api/ask-ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -293,8 +395,7 @@
                 gsap.to(loader, { opacity: 0, scale: 0.8, duration: 0.3, onComplete: () => {
                     loader.remove();
                     
-                    // 3. Append AI Response
-                    const responseText = (response.ok && result.success) ? result.answer : `❌ Error: ${result.error || "Unknown server error."}`;
+                    const responseText = (response.ok && result.success) ? result.answer : `❌ Error: ${result.error}`;
                     const { msgWrapper: aiWrapper, msgBubble: aiBubble } = createBubble(responseText, false);
                     chatWindow.appendChild(aiWrapper);
 
@@ -303,7 +404,7 @@
                         { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }
                     );
                     
-                    scrollToBottom();
+                    gsap.to(chatWindow, { scrollTo: "max", duration: 0.6, ease: "power2.out", delay: 0.1 });
 
                     if (window.MathJax) {
                         MathJax.typesetPromise([aiBubble]).catch(console.error);
@@ -311,17 +412,10 @@
                 }});
 
             } catch (error) {
-                document.getElementById(loadingId).remove();
-                const { msgWrapper, msgBubble } = createBubble("❌ Connection failed.", false);
+                document.getElementById(loadingId)?.remove();
+                const { msgWrapper, msgBubble } = createBubble("❌ Connection failed. Make sure the Node.js server is running on port 3000.", false);
                 chatWindow.appendChild(msgWrapper);
                 gsap.from(msgBubble, { opacity: 0, y: 20, duration: 0.5 });
-                scrollToBottom();
-            } finally {
-                // --- UNLOCK EVERYTHING ---
-                // No matter if it succeeds or fails, unlock the inputs so the user can try again
-                inputField.disabled = false;
-                sendBtn.disabled = false;
-                inputField.focus(); // Snap the cursor back into the input box
             }
         }
     </script>
