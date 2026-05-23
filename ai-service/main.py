@@ -51,7 +51,7 @@ def student_chat(request: ChatRequest, db: Session = Depends(get_db)):
         return {"answer": friendly_rejection, "success": True}
 
     # 2. If all data is present, build the table name and proceed normally
-    collection_name = f"{request.subject}_class_{request.grade}_{request.chapter}_v2".lower()
+    collection_name = f"{request.subject}_class_{request.grade}_v2".lower()
     
     try:
         # Turn the student's question into math (Vectors)
